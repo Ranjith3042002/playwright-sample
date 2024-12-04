@@ -1,5 +1,5 @@
-const { chromium } = require('playwright')
-const {expect} = require("expect");
+const { chromium } = require('playwright');
+const { expect } = require("expect");
 const cp = require('child_process');
 const playwrightClientVersion = cp.execSync('npx playwright --version').toString().trim().split(' ')[1];
 
@@ -11,8 +11,8 @@ const playwrightClientVersion = cp.execSync('npx playwright --version').toString
       'platform': 'Windows 10',
       'build': 'Playwright Single Build',
       'name': 'Playwright Sample Test',
-      'user': process.env.LT_USERNAME,
-      'accessKey': process.env.LT_ACCESS_KEY,
+      'user': 'ranjithkesavan0',
+      'accessKey': 'uGI1ZXy8c0REiRAhhNcVocxmbshhBcQfGSZSVhWvRMwhzUiJw1',
       'network': true,
       'video': true,
       'console': true,
@@ -21,34 +21,33 @@ const playwrightClientVersion = cp.execSync('npx playwright --version').toString
       'geoLocation': '', // country code can be fetched from https://www.lambdatest.com/capabilities-generator/
       'playwrightClientVersion': playwrightClientVersion
     }
-  }
+  };
 
   const browser = await chromium.connect({
     wsEndpoint: `wss://cdp.lambdatest.com/playwright?capabilities=${encodeURIComponent(JSON.stringify(capabilities))}`
-  })
+  });
 
-  const page = await browser.newPage()
+  const page = await browser.newPage();
 
-  await page.goto("https://duckduckgo.com");
+  // Step 1: Open Lambda Test's Selenium Playground
+  await page.goto('https://www.lambdatest.com/selenium-playground/');
 
-  let element = await page.locator("[name=\"q\"]");
-  await element.click();
-  await element.type("LambdaTest");
-  await element.press("Enter");
-  const title = await page.title()
+  // Step 2: Click "Simple Form Demo"
+  await page.getByRole('link', { name: 'Simple Form Demo' }).click();
 
-  try {
-    expect(title).toEqual('LambdaTest at DuckDuckGo')
-    // Mark the test as completed or failed
-    await page.evaluate(_ => {}, `lambdatest_action: ${JSON.stringify({ action: 'setTestStatus', arguments: { status: 'passed', remark: 'Title matched' } })}`)
-    await teardown(page, browser)
-  } catch (e) {
-    await page.evaluate(_ => {}, `lambdatest_action: ${JSON.stringify({ action: 'setTestStatus', arguments: { status: 'failed', remark: e.stack } })}`)
-    await teardown(page, browser)
-    throw e
-  }
+  // Step 3: Click the input field with placeholder 'Please enter your Message'
+  await page.getByPlaceholder('Please enter your Message').click();
 
-})()
+  // Step 4: Fill the message 'Welcome to LambdaTest'
+  await page.getByPlaceholder('Please enter your Message').fill('Welcome to LambdaTest');
+
+  // Step 5: Click the 'Get Checked Value' button
+  await page.getByRole('button', { name: 'Get Checked Value' }).click();
+
+  // Step 6: Close the page after the wait
+  await teardown(page, browser);
+
+})();
 
 async function teardown(page, browser) {
   await page.close();
