@@ -5,3 +5,5 @@
 tasks:
   - init: npx playwright install; npx playwright install-deps; npm install
     command: node playwright-single.js
+    command: node playwright-single2.js
+    command: node playwright-single3.js
